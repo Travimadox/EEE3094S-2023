@@ -12,7 +12,7 @@ After the careful design of the controller based on given specifications, the ne
 
 ### Controller Export and Simulation Parameters
 
-After optimising the controller parameters using MATLAB's PID Tuner, the tuned controller was seamlessly exported into our Simulink model to complete the KittiCopter system simulation. The Simulink model is illustrated in the figure below. 
+After optimising the controller parameters using MATLAB's Control System Designer, the tuned controller was seamlessly exported into our Simulink model to complete the KittiCopter system simulation. The Simulink model is illustrated in the figure below. 
 
 ![Simulink Model](https://imgur.com/4PSFuFB.jpg)
 
@@ -23,62 +23,36 @@ By integrating the tuned controller into the Simulink model, we were able to cre
 
 ## Simulation Scenarios
 
-### 1. Steady-State Tracking Accuracy Test
+### 1. No variation Test
 
 #### Objective:
-To ensure the system tracks position inputs with >90% accuracy.
+To ensure the system 
+- Tracks position inputs with >90% accuracy
+- Settling time less than 88.8s.
+- Overshoot less than 5%
 
 #### Procedure:
 
 1. **Setup Simulink Model**: Make sure your Simulink model has the controller and plant in a closed-loop configuration.
 2. **Input Signal**: Use a Step input block to create a step reference signal.
 3. **Run Simulation**: Execute the Simulink model.
-4. **Analyze Results**: Use the Scope or To Workspace blocks to extract the output and calculate the steady-state error.
-5. **Compare**: Ensure that the error is less than 10%.
+4. **Analyze Results**: Use the Scope  to extract the output and calculate the steady-state error,settling time and overshoot.
+5. **Compare**: Ensure that the parameters meet the objectives.
 
 #### Result:
 ![Step Response](https://imgur.com/oXzy8Tz.jpg)
+The performance metrics are shown below:
 
-As can be seen from the plot above the kitticopter sytem perfectly tracks the step input with zero steady error. This outcome aligns perfectly with our design expectations, confirming that the system achieves a tracking accuracy greater than 90%.
+| Parameter              | Result  |
+|------------------------|---------|
+| Steady-state error     | 0       |
+| Settling time          | 73.405s  |
+| Percentage overshoot   | 0.6%      |
 
-### 2. Settling Time Improvement Test
-
-#### Objective:
-The aim of this test is to minimize the system's settling time without negatively impacting other performance criteria, such as overshoot or stability.
-
-#### Procedure:
-
-1. **Conduct Closed-Loop Test**: Operate the system in a closed-loop configuration and measure the time it takes for the system's output to settle within a specified tolerance band around the final value.
-
-#### Results:
-
-![Settling Time](https://imgur.com/CP0KTwX.jpg)
-
-The system's settling time was measured to be approximately 157 seconds. This is the quickest settling time that could be achieved given the current configuration. The pole locations were specifically chosen to be at the point of maximum speed permissible by the root locus plot, effectively placing the poles along the centroid.
-
-In summary, this test confirms that we have optimized the settling time of the system as much as possible within the given design constraints. Although rapid settling is desirable, this is the fastest we can achieve without compromising other key performance indicators.
-
-### 3. Overshoot Test
-
-#### Objective:
-The goal of this test is to confirm that the system's peak overshoot remains below a 5% threshold.
-
-#### Procedure:
-
-1. **Configure Simulink**: Set up your closed-loop system in Simulink and use a Step input block for generating a step reference signal.
-2. **Execute and Record**: Run the Simulink model and capture the peak value of the system's output.
-3. **Compute Overshoot**: Calculate the percentage overshoot with respect to the step input's final value.
-
-#### Results:
-
-![Overshoot Result](https://imgur.com/oXzy8Tz.jpg)
-
-As depicted in the plot above, the system shows negligible overshoot, as the response never exceeds the setpoint. This validates that our system complies with the design criteria of less than 5% overshoot, as outlined in Chapter 4 of the design documentation.
-
-By achieving this, we have verified that our system meets all the required performance specifications for overshoot, confirming the robustness of the design.
+As can be seen from the plot above the kitticopter system meets the requiremnts
 
 
-### 4. Robustness to Parameter Uncertainty Test
+### 2. Robustness to Aerodynamic constant Uncertainty Test
 
 #### Objective:
 The aim of this test is to assess the system's robustness under conditions where there is a 10% variance in the aerodynamic constant.
@@ -94,8 +68,6 @@ The aim of this test is to assess the system's robustness under conditions where
 ##### Case of 90% Aerodynamic Constant
 For \(0.9b\): \(G(s) = \frac{24.50}{13s + 1}\)
 
-Simulink Model: ![Simulink Model for 0.9b](https://imgur.com/G4zZe4I.jpg)
-
 Step Response: ![Result for 0.9b](.jpg)
 
 Performance Metrics for 90% Aerodynamic Constant:
@@ -103,13 +75,11 @@ Performance Metrics for 90% Aerodynamic Constant:
 | Parameter              | Result  |
 |------------------------|---------|
 | Steady-state error     | 0       |
-| Settling time          | 157.5s  |
-| Percentage overshoot   | 0%      |
+| Settling time          | 74.651s  |
+| Percentage overshoot   | 0.2%      |
 
 ##### Case of 110% Aerodynamic Constant
 For \(1.1b\): \(G(s) = \frac{24.50}{15.9s + 1}\)
-
-Simulink Model: ![Simulink Model for 1.1b](https://imgur.com/0kQAHfF.jpg)
 
 Step Response: ![Result for 1.1b](https://imgur.com/TzOFy8L.jpg)
 
@@ -117,9 +87,9 @@ Performance Metrics for 110% Aerodynamic Constant:
 
 | Parameter              | Result  |
 |------------------------|---------|
-| Steady-state error     | 0       |
-| Settling time          | 170s    |
-| Percentage overshoot   | 0%      |
+| Steady-state error     | 0    |
+| Settling time          |  70.663s |
+| Percentage overshoot   |    1.5%|
 
 #### Summary
 
@@ -127,22 +97,20 @@ The test results demonstrate that the system remains robust even when subject to
 
 
 
-### 5. Component Tolerance Robustness Test
+### 3. Component Tolerance Robustness Test on Controller Gain
 
 #### Objective:
-The test aims to assess the system's resilience and performance stability when subjected to a 10% tolerance in component values, focusing primarily on controller gains.
+The test aims to assess the system's resilience and performance stability when subjected to a 10% tolerance in component values, focusing primarily on controller gain.
 
 #### Procedure:
 
-1. **Introduce Component Variations**: Add scripts or blocks within the Simulink model to simulate ±10% variations in controller parameters.
+1. **Introduce Component Variations**: Vary the controller gain to  ±10% 
 2. **Simulation and Analysis**: Run the simulations and carefully analyze the resulting performance metrics.
 
 #### Results
 
-We will focus on the controller gain, as it is most susceptible to component tolerances. We will analyze the system behavior under both minimum and maximum gain conditions, calculated with a 10% tolerance.
-
 ##### Case of Minimum Gain
-The minimum gain, calculated as \( \frac{R3 \times 0.9}{R1 \times 1.1} \), is \( 0.00129 \).
+The minimum gain, calculated as \( \frac{R2 \times 0.9}{R1 \times 1.1} \), is \( 2.468 \times 10^{-3} \).
 
 Step Response: ![Result for Minimum Gain](https://imgur.com/uPG7VJV.jpg)
 
@@ -150,12 +118,12 @@ Performance Metrics for Minimum Gain:
 
 | Parameter              | Result  |
 |------------------------|---------|
-| Steady-state error     | 0       |
-| Settling time          | 180s    |
-| Percentage overshoot   | 0%      |
+| Steady-state error     |0     |
+| Settling time          |  91.849s  |
+| Percentage overshoot   |  0%   |
 
 ##### Case of Maximum Gain
-The maximum gain, calculated as \( \frac{R3 \times 1.1}{R1 \times 0.9} \), is \( 0.001687 \).
+The maximum gain, calculated as \( \frac{R2 \times 1.1}{R1 \times 0.9} \), is \( 3.687 \times 10^{-3} \).
 
 Step Response: ![Result for Maximum Gain](https://imgur.com/Sa0xraL.jpg)
 
@@ -164,8 +132,8 @@ Performance Metrics for Maximum Gain:
 | Parameter              | Result  |
 |------------------------|---------|
 | Steady-state error     | 0       |
-| Settling time          | 80s     |
-| Percentage overshoot   | 0.5%    |
+| Settling time          | 57.951s     |
+| Percentage overshoot   | 2.1%    |
 
 #### Summary
 
@@ -173,6 +141,80 @@ The system demonstrates resilience and stable performance within a 10% component
 
 The effects of other component tolerances will need to be assessed during the physical implementation phase, which will be discussed in the subsequent chapter. There, we will have the opportunity to measure and adjust for the real-world impact of component variations to ensure that the system continues to meet its performance requirements.
 
+### 6. Component Tolerance Robustness Test on Controller Pole and Zero
+
+#### Objective:
+The test aims to assess the system's resilience and performance stability when subjected to a 10% tolerance in component values, focusing primarily on controller pole and zer locations.
+
+#### Procedure:
+
+1. **Introduce Component Variations**: Vary the location of the controller pole and zero to correspond to upper bound and lower boudsns of the products R1C1 and R2C2 respectively.
+2. **Simulation and Analysis**: Run the simulations and carefully analyze the resulting performance metrics.
+
+#### Results
+
+##### Case of RC product Lower Bound
+\[
+R1C1_{\text{min}} = 0.9 \times 0.85 \times R1C1 = 0.9 \times 0.85 \times 11.11=8.5
+\]
+The zero under these circumstances would be at \( \frac{1}{R1C1_{\text{min}}} = 0.1176\).
+
+\[
+R2C2_{\text{min}} = 0.9 \times 0.85 \times R2C2 = 0.9 \times 0.85 \times 8.025 =6.139
+\]
+The pole would accordingly be at \( \frac{1}{R2C2_{\text{min}}} = 0.1629\).
+
+Thus, the lead controller under minimum tolerances would be:
+\[
+\frac{s + z_{\text{max}}}{s + p_{\text{max}}} =\frac{s+0.1176}{s+0.1629}
+\]
+
+Step Response: ![Result for Lower Bound](https://imgur.com/uPG7VJV.jpg)
+
+Performance Metrics for Minimum Gain:
+
+| Parameter              | Result  |
+|------------------------|---------|
+| Steady-state error     |    0   |
+| Settling time          |    71.909s|
+| Percentage overshoot   |    1%  |
+
+##### Case of RC product Upper Bound
+\[
+R1C1_{\text{max}} = 1.1 \times 1.15 \times R1C1 = 1.1 \times 1.15 \times 11.11 =14.05
+\]
+The corresponding zero would be at \( \frac{1}{R1C1_{\text{max}}} = 0.0712\).
+
+\[
+R2C2_{\text{max}} = 1.1 \times 1.15 \times R2C2 = 1.1 \times 1.15 \times 8.025 =10.15
+\]
+The corresponding pole would be at \( \frac{1}{R2C2_{\text{max}}}=0.0985 \).
+
+Thus, the lead controller under maximum tolerances would be:
+\[
+\frac{s + z_{\text{min}}}{s + p_{\text{min}}} = \frac{s+0.0712}{s+0.0985}
+\]
+
+
+
+
+
+
+Step Response: ![Result for Upper Bound Products](https://imgur.com/Sa0xraL.jpg)
+
+Performance Metrics for Maximum Gain:
+
+| Parameter              | Result  |
+|------------------------|---------|
+| Steady-state error     | 0       |
+| Settling time          | 72.657s     |
+| Percentage overshoot   | 0.2%    |
+
+#### Summary
+
+The system demonstrates resilience and stable performance within a 10% component tolerance range, particularly for controller gains. It should be noted, however, that this simulation is limited in scope. While the controller gain was the most straightforward parameter to model for tolerance variations, it doesn't account for all possible component tolerances that could affect system performance. The complexities of capturing the aggregate effect of individual component tolerances on the system's overall behavior go beyond the scope of this simulation.
+
+The effects of other component tolerances will need to be assessed during the physical implementation phase, which will be discussed in the subsequent chapter. There, we will have the opportunity to measure and adjust for the real-world impact of component variations to ensure that the system continues to meet its performance requirements.
 
 
 
