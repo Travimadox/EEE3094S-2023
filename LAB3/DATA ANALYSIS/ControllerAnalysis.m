@@ -3,7 +3,7 @@ file_path = 'ControllerData/HelicopterData9.csv';
 data = readtable(file_path);
 
 % Calculate values for horizontal lines
-set_point = 8.884;
+set_point = 6.158;
 upper_limit = set_point * 1.05;  % +5%
 lower_limit = set_point * 0.95;  % -5%
 
